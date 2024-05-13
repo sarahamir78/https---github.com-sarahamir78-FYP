@@ -25,7 +25,6 @@ class _OrganizationRegistrationState extends State<OrganizationRegistration> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _organizationController = TextEditingController();
   String? _selectedCategory;
-  String? _selectedGender;
   PdfFile? pdfFile;
   bool _loading = false;
 
@@ -42,7 +41,6 @@ class _OrganizationRegistrationState extends State<OrganizationRegistration> {
     String address = _addressController.text;
     String organization = _organizationController.text;
     String? category = _selectedCategory;
-    String? gender = _selectedGender;
 
     // Call MongoDB class to insert user data
     bool success = await MongoDatabase.registerOrganization(
@@ -73,7 +71,6 @@ class _OrganizationRegistrationState extends State<OrganizationRegistration> {
       _organizationController.clear();
       setState(() {
         _selectedCategory = null;
-        _selectedGender = null;
         pdfFile = null; // Clear the pdfFile after registration
         _loading = false;
       });

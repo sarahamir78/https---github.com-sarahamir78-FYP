@@ -25,18 +25,24 @@ class _LoginScreenState extends State<LoginScreen> {
   final GlobalKey<FormState> _password = GlobalKey<FormState>();
 
   void _login() async {
+    setState(() {
+      pressed = false;
+    });
     String email = username.text;
     String pass = password.text;
 
-    // Call the login method from your MongoDatabase class
     bool loginSuccess = await MongoDatabase.login(email, pass);
 
     if (loginSuccess) {
-      // If login is successful, navigate to home page
+      setState(() {
+        pressed = true;
+      });
       Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => DashboardScreen()));
     } else {
-      // If login fails, show error message
+      setState(() {
+        pressed = true;
+      });
       VxToast.show(context,
           msg: 'Invalid email or password',
           bgColor: const Color.fromARGB(255, 255, 17, 0),
@@ -165,6 +171,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (!_password.currentState!.validate()) {
                           return;
                         }
+                        _login();
                       },
                       child: Text(
                         "Sign In",
@@ -175,7 +182,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       ).pOnly(left: 20, right: 20),
                       style: ElevatedButton.styleFrom(shape: StadiumBorder()),
                     )
-                  : CupertinoActivityIndicator(color: schemecolor),
+                  : Center(
+                      child: CircularProgressIndicator(
+                      color: schemecolor,
+                      strokeWidth: 2,
+                    )),
             ],
           )),
         ),
