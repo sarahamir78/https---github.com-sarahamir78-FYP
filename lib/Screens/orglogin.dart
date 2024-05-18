@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fyp_sports_v3/Helper/mongodb.dart';
-import 'package:fyp_sports_v3/Screens/dashboard.dart';
 import 'package:fyp_sports_v3/Screens/orgdashboard.dart';
 import 'package:fyp_sports_v3/config.dart';
 import 'package:fyp_sports_v3/main.dart';
@@ -30,17 +29,21 @@ class _OrgLoginState extends State<OrgLogin> {
     setState(() {
       pressed = false;
     });
+
     String email = username.text;
     String pass = password.text;
 
-    bool loginSuccess = await MongoDatabase.loginorg(email, pass);
+    Map<String, dynamic>? userDetails =
+        await MongoDatabase.loginorg(email, pass);
 
-    if (loginSuccess) {
+    if (userDetails != null) {
       setState(() {
         pressed = true;
       });
-      prefs.setString('orgemail', email);
-      Navigator.pushReplacement(
+      prefs.setString('orgemail', userDetails['orgemail']);
+      prefs.setString('orgname', userDetails['orgname']);
+      prefs.setInt('orgapproved', userDetails['isapproved']);
+      Navigator.push(
           context, MaterialPageRoute(builder: (context) => OrgDashboard()));
     } else {
       setState(() {

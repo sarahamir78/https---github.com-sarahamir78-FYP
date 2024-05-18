@@ -1,4 +1,5 @@
 import 'package:fyp_sports_v3/Models/pdfmodel.dart';
+import 'package:fyp_sports_v3/main.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 final String mongoDbUrl =
@@ -13,10 +14,10 @@ class MongoDatabase {
     var db = await Db.create(mongoDbUrl);
     await db.open();
     // inspect(db);
-    var status = db.serverStatus();
-    print(status);
-    var collection = db.collection(collectionName);
-    print(await collection.find().toList());
+    // var status = db.serverStatus();
+    // print(status);
+    // var collection = db.collection(collectionName);
+    // print(await collection.find().toList());
   }
 
   static Future<bool> registerUser(
@@ -110,7 +111,8 @@ class MongoDatabase {
     }
   }
 
-  static Future<bool> loginorg(String email, String password) async {
+  static Future<Map<String, dynamic>?> loginorg(
+      String email, String password) async {
     try {
       var db = await Db.create(mongoDbUrl);
       await db.open();
@@ -124,10 +126,10 @@ class MongoDatabase {
       await db.close();
 
       // If result is not null, login successful
-      return result != null;
+      return result;
     } catch (e) {
       print('Error logging in: $e');
-      return false;
+      return null;
     }
   }
 
@@ -193,6 +195,7 @@ class MongoDatabase {
     String trialTime,
     String location,
     String description,
+    String organizer,
   ) async {
     try {
       var db = await Db.create(mongoDbUrl);
@@ -205,12 +208,31 @@ class MongoDatabase {
         'trialTime': trialTime,
         'location': location,
         'description': description,
+        'organizer': organizer,
+        'organizeremail': prefs.getString('orgemail'),
       });
       await db.close();
       return true;
     } catch (e) {
       print('Error adding trial to MongoDB: $e');
       return false;
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> fetchTrialsByOrganizationEmail(
+      String email) async {
+    try {
+      var db = await Db.create(mongoDbUrl);
+      await db.open();
+
+      var collection = db.collection(trialcollection);
+      var trials = await collection.find({'organizeremail': email}).toList();
+
+      await db.close();
+      return trials;
+    } catch (e) {
+      print('Error fetching trials: $e');
+      return [];
     }
   }
 }

@@ -74,7 +74,7 @@ class _AdminScreenState extends State<AdminScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Org Name : ' + org['orgname'] ?? 'N/A',
+                              'Org Name : ' + org['orgname'],
                               style: TextStyle(
                                 fontSize: 20.0,
                                 fontWeight: FontWeight.bold,

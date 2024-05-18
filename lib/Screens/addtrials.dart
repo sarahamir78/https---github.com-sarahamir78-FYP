@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fyp_sports_v3/Helper/mongodb.dart';
 import 'package:fyp_sports_v3/Screens/orgdashboard.dart';
 import 'package:fyp_sports_v3/config.dart';
+import 'package:fyp_sports_v3/main.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class AddTrialsScreen extends StatefulWidget {
@@ -28,14 +29,14 @@ class _AddTrialsScreenState extends State<AddTrialsScreen> {
         _loading = true;
       });
       bool result = await MongoDatabase.addTrial(
-        _trialNameController.text,
-        _selectedCategory!,
-        DateTime.parse(
-            _trialDateController.text), // Parsing date from controller
-        _trialTimeController.text,
-        _locationController.text,
-        _descriptionController.text,
-      );
+          _trialNameController.text,
+          _selectedCategory!,
+          DateTime.parse(
+              _trialDateController.text), // Parsing date from controller
+          _trialTimeController.text,
+          _locationController.text,
+          _descriptionController.text,
+          prefs.getString('orgname')!);
 
       if (result) {
         VxToast.show(context,
@@ -97,7 +98,7 @@ class _AddTrialsScreenState extends State<AddTrialsScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.pushReplacement(
+        Navigator.push(
             context, MaterialPageRoute(builder: (context) => OrgDashboard()));
         return true;
       },
