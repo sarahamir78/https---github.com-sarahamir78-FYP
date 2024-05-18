@@ -78,6 +78,7 @@ class MongoDatabase {
         'organization': organization,
         'category': category,
         'pdf': pdfBytes, // Store PDF file as bytes in the database
+        'isapproved': 0
       });
       await db.close();
       return true;
@@ -104,6 +105,61 @@ class MongoDatabase {
       return result != null;
     } catch (e) {
       print('Error logging in: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> deleteAllData() async {
+    try {
+      var db = await Db.create(mongoDbUrl);
+      await db.open();
+
+      var playerCollection = db.collection(collectionName);
+      var organizationCollection = db.collection(organizationColName);
+
+      await playerCollection.remove({});
+      await organizationCollection.remove({});
+
+      await db.close();
+      return true;
+    } catch (e) {
+      print('Error deleting data from MongoDB: $e');
+      return false;
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> fetchOrganizations() async {
+    try {
+      var db = await Db.create(mongoDbUrl);
+      await db.open();
+
+      var collection = db.collection(organizationColName);
+      var organizations = await collection.find().toList();
+
+      await db.close();
+      return organizations;
+    } catch (e) {
+      print('Error fetching organizations: $e');
+      return [];
+    }
+  }
+
+  static Future<bool> updateOrganizationApprovalStatus(
+      String id, int status) async {
+    try {
+      var db = await Db.create(mongoDbUrl);
+      await db.open();
+
+      var collection = db.collection(organizationColName);
+      var result = await collection.update(
+        where.id(ObjectId.fromHexString(id)),
+        modify.set('isapproved', status),
+      );
+
+      await db.close();
+      return result['nModified'] > 0;
+    } catch (e) {
+      print('Error updating organization status: $e');
       return false;
     }
   }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_sports_v3/Helper/mongodb.dart';
+import 'package:fyp_sports_v3/Screens/adminscreen.dart';
 import 'package:fyp_sports_v3/Screens/loginscreen.dart';
 import 'package:fyp_sports_v3/Screens/organizationregister.dart';
 import 'package:fyp_sports_v3/Screens/orglogin.dart';
@@ -15,6 +17,16 @@ class LoginorRegisterScreen extends StatefulWidget {
 class _LoginorRegisterScreenState extends State<LoginorRegisterScreen> {
   bool _isExpanded = false;
   bool _isExpanded1 = false;
+
+  @override
+  void initState() {
+    //deletedata();
+    super.initState();
+  }
+
+  deletedata() async {
+    await MongoDatabase.deleteAllData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -168,6 +180,25 @@ class _LoginorRegisterScreenState extends State<LoginorRegisterScreen> {
                     ),
                   ),
                 ),
+                SizedBox(
+                  height: 4,
+                ),
+                Card(
+                  color: Colors.white,
+                  elevation: 3,
+                  child: ListTile(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AdminScreen()));
+                    },
+                    tileColor: Colors.white,
+                    selectedColor: Colors.white,
+                    title: Text('Admin Panel'),
+                    leading: Icon(Icons.admin_panel_settings),
+                  ),
+                )
               ],
             ),
           ),
