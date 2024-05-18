@@ -6,6 +6,7 @@ final String mongoDbUrl =
 final String dbName = 'SportsDB';
 final String collectionName = 'col_Player';
 final String organizationColName = 'col_Organization';
+final String trialcollection = 'col_Trials';
 
 class MongoDatabase {
   static connectdb() async {
@@ -109,6 +110,27 @@ class MongoDatabase {
     }
   }
 
+  static Future<bool> loginorg(String email, String password) async {
+    try {
+      var db = await Db.create(mongoDbUrl);
+      await db.open();
+
+      var collection = db.collection(organizationColName);
+      var result = await collection.findOne({
+        'orgemail': email,
+        'orgpassword': password,
+      });
+
+      await db.close();
+
+      // If result is not null, login successful
+      return result != null;
+    } catch (e) {
+      print('Error logging in: $e');
+      return false;
+    }
+  }
+
   static Future<bool> deleteAllData() async {
     try {
       var db = await Db.create(mongoDbUrl);
@@ -160,6 +182,34 @@ class MongoDatabase {
       return result['nModified'] > 0;
     } catch (e) {
       print('Error updating organization status: $e');
+      return false;
+    }
+  }
+
+  static Future<bool> addTrial(
+    String trialName,
+    String trialCategory,
+    DateTime trialDate,
+    String trialTime,
+    String location,
+    String description,
+  ) async {
+    try {
+      var db = await Db.create(mongoDbUrl);
+      await db.open();
+      var collection = db.collection(trialcollection);
+      await collection.insert({
+        'trialName': trialName,
+        'trialCategory': trialCategory,
+        'trialDate': trialDate.toIso8601String(),
+        'trialTime': trialTime,
+        'location': location,
+        'description': description,
+      });
+      await db.close();
+      return true;
+    } catch (e) {
+      print('Error adding trial to MongoDB: $e');
       return false;
     }
   }

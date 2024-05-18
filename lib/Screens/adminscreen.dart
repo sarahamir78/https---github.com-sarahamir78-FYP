@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_sports_v3/Helper/mongodb.dart';
+import 'package:fyp_sports_v3/config.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -42,7 +43,11 @@ class _AdminScreenState extends State<AdminScreen> {
         title: Text('Admin Screen'),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? Center(
+              child: CircularProgressIndicator(
+              color: schemecolor,
+              strokeWidth: 2,
+            ))
           : FutureBuilder<List<Map<String, dynamic>>>(
               future: organizationsFuture,
               builder: (context, snapshot) {

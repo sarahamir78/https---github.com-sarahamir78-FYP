@@ -1,6 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fyp_sports_v3/Helper/mongodb.dart';
+import 'package:fyp_sports_v3/Screens/dashboard.dart';
+import 'package:fyp_sports_v3/Screens/orgdashboard.dart';
 import 'package:fyp_sports_v3/config.dart';
+import 'package:fyp_sports_v3/main.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class OrgLogin extends StatefulWidget {
@@ -21,6 +25,34 @@ class _OrgLoginState extends State<OrgLogin> {
   TextEditingController password = TextEditingController();
   final GlobalKey<FormState> _username = GlobalKey<FormState>();
   final GlobalKey<FormState> _password = GlobalKey<FormState>();
+
+  void _login() async {
+    setState(() {
+      pressed = false;
+    });
+    String email = username.text;
+    String pass = password.text;
+
+    bool loginSuccess = await MongoDatabase.loginorg(email, pass);
+
+    if (loginSuccess) {
+      setState(() {
+        pressed = true;
+      });
+      prefs.setString('orgemail', email);
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => OrgDashboard()));
+    } else {
+      setState(() {
+        pressed = true;
+      });
+      VxToast.show(context,
+          msg: 'Invalid email or password',
+          bgColor: const Color.fromARGB(255, 255, 17, 0),
+          textColor: Colors.white);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height / 100;
@@ -142,6 +174,7 @@ class _OrgLoginState extends State<OrgLogin> {
                         if (!_password.currentState!.validate()) {
                           return;
                         }
+                        _login();
                       },
                       child: Text(
                         "Sign In",
@@ -152,7 +185,10 @@ class _OrgLoginState extends State<OrgLogin> {
                       ).pOnly(left: 20, right: 20),
                       style: ElevatedButton.styleFrom(shape: StadiumBorder()),
                     )
-                  : CupertinoActivityIndicator(color: schemecolor),
+                  : CircularProgressIndicator(
+                      color: schemecolor,
+                      strokeWidth: 2,
+                    ),
             ],
           )),
         ),
