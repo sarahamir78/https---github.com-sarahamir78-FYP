@@ -98,7 +98,7 @@ class _AddTrialsScreenState extends State<AddTrialsScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        Navigator.push(
+        Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => OrgDashboard()));
         return true;
       },

@@ -8,6 +8,7 @@ final String dbName = 'SportsDB';
 final String collectionName = 'col_Player';
 final String organizationColName = 'col_Organization';
 final String trialcollection = 'col_Trials';
+final String trialrequest = 'col_TrialRequest';
 
 class MongoDatabase {
   static connectdb() async {
@@ -90,7 +91,8 @@ class MongoDatabase {
     }
   }
 
-  static Future<bool> login(String email, String password) async {
+  static Future<Map<String, dynamic>?> login(
+      String email, String password) async {
     try {
       var db = await Db.create(mongoDbUrl);
       await db.open();
@@ -104,10 +106,10 @@ class MongoDatabase {
       await db.close();
 
       // If result is not null, login successful
-      return result != null;
+      return result;
     } catch (e) {
       print('Error logging in: $e');
-      return false;
+      return null;
     }
   }
 
@@ -233,6 +235,134 @@ class MongoDatabase {
     } catch (e) {
       print('Error fetching trials: $e');
       return [];
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> fetchtrials() async {
+    try {
+      var db = await Db.create(mongoDbUrl);
+      await db.open();
+
+      var collection = db.collection(trialcollection);
+      var trials = await collection.find().toList();
+
+      await db.close();
+      return trials;
+    } catch (e) {
+      print('Error fetching trials: $e');
+      return [];
+    }
+  }
+
+  static Future<bool> addTrialRequest(String trialName, String organizer,
+      String userName, String userEmail, String category) async {
+    try {
+      var db = await Db.create(mongoDbUrl);
+      await db.open();
+      var collection = db.collection(trialrequest);
+      await collection.insert({
+        'trialName': trialName,
+        'organizer': organizer,
+        'userName': userName,
+        'userEmail': userEmail,
+        'category': category,
+        'status': 0
+      });
+      await db.close();
+      return true;
+    } catch (e) {
+      print('Error adding trial request to MongoDB: $e');
+      return false;
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> fetchTrialRequests(
+      String userEmail) async {
+    try {
+      var db = await Db.create(mongoDbUrl);
+      await db.open();
+
+      var collection = db.collection(trialrequest);
+      var trialRequests =
+          await collection.find(where.eq('userEmail', userEmail)).toList();
+
+      await db.close();
+      return trialRequests;
+    } catch (e) {
+      print('Error fetching trial requests: $e');
+      return [];
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> fetchTrialRequestsforadmin() async {
+    try {
+      var db = await Db.create(mongoDbUrl);
+      await db.open();
+
+      var collection = db.collection(trialrequest);
+      var trialRequests = await collection.find().toList();
+
+      await db.close();
+      return trialRequests;
+    } catch (e) {
+      print('Error fetching trial requests: $e');
+      return [];
+    }
+  }
+
+// Inside the method for approving a trial request
+  static Future<bool> approveTrialRequest(String trialName) async {
+    try {
+      var db = await Db.create(mongoDbUrl);
+      await db.open();
+
+      var collection = db.collection(trialrequest);
+      var trialRequest =
+          await collection.findOne(where.eq('trialName', trialName));
+
+      if (trialRequest != null) {
+        var result = await collection.update(
+          where.eq('trialName', trialName),
+          modify.set('status', 1),
+        );
+
+        await db.close();
+        return true;
+      } else {
+        print('Trial request with trial name $trialName not found.');
+        return false;
+      }
+    } catch (e) {
+      print('Error approving trial request: $e');
+      return false;
+    }
+  }
+
+// Inside the method for rejecting a trial request
+  static Future<bool> rejectTrialRequest(String trialName) async {
+    try {
+      var db = await Db.create(mongoDbUrl);
+      await db.open();
+
+      var collection = db.collection(trialrequest);
+      var trialRequest =
+          await collection.findOne(where.eq('trialName', trialName));
+
+      if (trialRequest != null) {
+        var result = await collection.update(
+          where.eq('trialName', trialName),
+          modify.set('status', 2),
+        );
+
+        await db.close();
+        return true;
+      } else {
+        print('Trial request with trial name $trialName not found.');
+        return false;
+      }
+    } catch (e) {
+      print('Error rejecting trial request: $e');
+      return false;
     }
   }
 }

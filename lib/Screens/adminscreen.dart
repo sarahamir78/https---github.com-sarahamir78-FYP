@@ -95,14 +95,28 @@ class _AdminScreenState extends State<AdminScreen> {
                               children: [
                                 if (org['isapproved'] == 0) ...[
                                   ElevatedButton(
-                                    onPressed: () => _updateOrganizationStatus(
-                                        org['_id'].toHexString(), 1),
+                                    onPressed: () {
+                                      _updateOrganizationStatus(
+                                          org['_id'].toHexString(), 1);
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  AdminScreen()));
+                                    },
                                     child: Text('Approve'),
                                   ),
                                   SizedBox(width: 8.0),
                                   ElevatedButton(
-                                    onPressed: () => _updateOrganizationStatus(
-                                        org['_id'].toHexString(), 2),
+                                    onPressed: () {
+                                      _updateOrganizationStatus(
+                                          org['_id'].toHexString(), 2);
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  AdminScreen()));
+                                    },
                                     child: Text('Reject'),
                                   ),
                                 ] else if (org['isapproved'] == 1) ...[

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_sports_v3/Helper/mongodb.dart';
+import 'package:fyp_sports_v3/Screens/adminlistscreen.dart';
 import 'package:fyp_sports_v3/Screens/adminscreen.dart';
 import 'package:fyp_sports_v3/Screens/loginscreen.dart';
 import 'package:fyp_sports_v3/Screens/organizationregister.dart';
@@ -191,7 +192,7 @@ class _LoginorRegisterScreenState extends State<LoginorRegisterScreen> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => AdminScreen()));
+                              builder: (context) => AdminListScreen()));
                     },
                     tileColor: Colors.white,
                     selectedColor: Colors.white,

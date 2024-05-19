@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fyp_sports_v3/Helper/mongodb.dart';
 import 'package:fyp_sports_v3/Screens/dashboard.dart';
 import 'package:fyp_sports_v3/config.dart';
+import 'package:fyp_sports_v3/main.dart';
 import 'package:velocity_x/velocity_x.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -28,16 +29,20 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() {
       pressed = false;
     });
+
     String email = username.text;
     String pass = password.text;
 
-    bool loginSuccess = await MongoDatabase.login(email, pass);
+    Map<String, dynamic>? userDetails = await MongoDatabase.login(email, pass);
 
-    if (loginSuccess) {
+    if (userDetails != null) {
       setState(() {
         pressed = true;
       });
-      Navigator.pushReplacement(
+      prefs.setString('email', userDetails['email']);
+      prefs.setString('name', userDetails['name']);
+      prefs.setString('category', userDetails['category']);
+      Navigator.push(
           context, MaterialPageRoute(builder: (context) => DashboardScreen()));
     } else {
       setState(() {
