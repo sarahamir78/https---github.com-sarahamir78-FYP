@@ -138,7 +138,6 @@ class _OrganizationRegistrationState extends State<OrganizationRegistration> {
                 TextFormField(
                   controller: _location,
                   decoration: InputDecoration(labelText: 'Headoffice Location'),
-                  keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   validator: (value) {
                     if (value == null || value.isEmpty) {
